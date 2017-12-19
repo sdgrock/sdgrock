@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArrayListEx", "ArrayListEx\ArrayListEx.csproj", "{5F3414BB-EB32-4F21-B705-7F505A01B846}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericsEx", "GenericsEx\GenericsEx.csproj", "{34110C8A-23E2-4712-BA8A-0B4341817E44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DelegateEx", "DelegateEx\DelegateEx.csproj", "{6CF6F599-E0FC-4E26-AF86-BF289C4D5F5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F3414BB-EB32-4F21-B705-7F505A01B846}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F3414BB-EB32-4F21-B705-7F505A01B846}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F3414BB-EB32-4F21-B705-7F505A01B846}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F3414BB-EB32-4F21-B705-7F505A01B846}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34110C8A-23E2-4712-BA8A-0B4341817E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34110C8A-23E2-4712-BA8A-0B4341817E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34110C8A-23E2-4712-BA8A-0B4341817E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34110C8A-23E2-4712-BA8A-0B4341817E44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CF6F599-E0FC-4E26-AF86-BF289C4D5F5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CF6F599-E0FC-4E26-AF86-BF289C4D5F5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CF6F599-E0FC-4E26-AF86-BF289C4D5F5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CF6F599-E0FC-4E26-AF86-BF289C4D5F5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,239 @@
+When we set FireInfoMessageEventOnUserErrors to true,
+errors that were previously handled as exceptions will be then handled as InfoMessage events.
+
+TYPED DATA SET:
+1.Console application
+2.add new items- data - data set
+3.on xsd data set file, right click n view design
+4.add database training
+5.open table
+6.drag to the design display
+
+PROGRAM.CS-
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DemoTypedDataSet
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+		//create object of data set adapter
+            EmpDataSet ds = new EmpDataSet();
+            EmpDataSetTableAdapters.employeeTableAdapter adapter = new EmpDataSetTableAdapters.employeeTableAdapter();
+
+		//fill the table employee 
+            adapter.Fill(ds.employee);
+
+            Console.WriteLine(ds.employee.Rows.Count);
+
+            foreach (EmpDataSet.employeeRow er in ds.employee.Rows)
+            {
+                Console.WriteLine(er.empno);
+            }
+
+            EmpDataSet.employeeRow emprow = ds.employee.FindByempno(3);
+            Console.WriteLine(emprow.empname);
+
+	//creating object of data row and adding data to it
+            
+		DataRow newrow = ds.employee.NewRow();
+            EmpDataSet.employeeRow row = (EmpDataSet.employeeRow)newrow;
+
+            row.empno = 7;
+            row.empname = "SDG";
+            row.empsal = 73453;
+            row.emptype = "P";
+           
+            ds.employee.Rows.Add(row);
+
+            adapter.Update(ds);
+        }
+    }
+}
+
+
+TO SHOW THE XML AND XSD FILE:
+
+ dt.Tables[0].WriteXml(@"..\..\emp.xml");
+ dt.Tables[0].WriteXmlSchema(@"..\..\emp.xsd");
+
+DB-FIRST APPROACH-
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            TrainingEntities context = new TrainingEntities();
+
+            var result = from emp in context.employees
+                         where emp.empsal > 26000
+                         select emp;
+
+            foreach (employee e in result)
+            {
+                Console.WriteLine
+                    ("{0} {1}", e.empname, e.empsal);
+            }
+
+            employee newEmp = new employee();
+            newEmp.empno = 101;
+            newEmp.empname = "Emp1015";
+            newEmp.empsal = 26789;
+            newEmp.emptype = "C";
+
+            //Delete
+   
+            employee tobeDeleted = (from emp in context.employees 
+                                    where emp.empno == 101 
+                                    select emp).FirstOrDefault();
+
+            context.employees.Remove(tobeDeleted);
+
+            //update
+
+            employee tobeUpdated = (from emp in context.employees
+                                    where emp.empno == 1015
+                                    select emp).FirstOrDefault();
+
+            tobeUpdated.empname = "NewName";
+
+            context.employees.Add(newEmp);
+            context.SaveChanges();
+            Console.ReadLine();
+        }
+    }
+}
+
+
+CODE FIRST APPROACH-
+
+1.CONSOLE APPLICATION
+2.RIGHT CLICK
+3.MANAGE NUGET PACKAGE
+4.ENTITY FRAMEWORK INSTALL
+5.CONSOLE PROJECT- MAKE 2 CLASSES
+6.APP CONFIG- CONNECTION STRING ADD
+ PROGRAM.CS - CAR ID- ANNOTATIONS- PRIMARY KEY
+
+CODE:
+PROGRAM.CS-
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Code_FirstDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            CarDbContext context = new CarDbContext();
+            Car carobj = new Car()
+            {
+                Company = "Hyundai",
+                YearofMake = 2017,
+                Model = "i20"
+            };
+            context.Cars.Add(carobj);
+            context.SaveChanges();
+        }
+    }
+}
+
+CAR.CS-
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+
+namespace Code_FirstDemo
+{
+    class Car
+    {
+        public int CarID { get; set; }
+        public string Company { get; set; }
+        public int YearofMake { get; set; }
+        public string Model { get; set; }
+    }
+}
+
+CarDbContext.cs-
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.Entity;
+
+namespace Code_FirstDemo
+{
+    class CarDbContext : DbContext
+    {
+        public CarDbContext() : base("Training") { }
+        public DbSet<Car> Cars {get; set;}
+    }
+}
+
+ADD CONNECTION STRING TO APP.CONFIG
+
+MODEL_FIRST APPROACH-
+
+1.RIGHT CLICK ON CONSOLE APP
+2.ADD- NEW ITEMS- DATA- ADO.NET- right click on screen- GIVE A BUS NAME AND ID AS BUS ID
+3.CLICK ON BUS- ADD NEW- SCALAR PROPERTY- 
+4.CLICK ON BUS ID
+5.ADD NEW- COMPANY -YEAR
+6.right click on screen- generate database from model
+7.run in sql server
+
+PROGRAM.CS-
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ModelFirstDemo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+
+                Model1Container1 context = new Model1Container1();
+                Bus obj = new Bus() { Company = "Volvo", Year = 2017 };
+                context.Buses.Add(obj);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        } 
+    }
+}
+

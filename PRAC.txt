@@ -1,0 +1,452 @@
+TODAY: 06-12-2017
+
+EVENT HANDLER PROGRAM:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApplication10
+{
+    class Mobile
+    {
+        public string MobileName { get; set; }
+        public delegate void CallEvent();
+        public event CallEvent CallRings;
+
+        public void OnCallRing()
+        {
+            if (CallRings != null)
+            {
+                CallRings();
+            }
+        }
+    }
+
+    class DemoEventArgs
+    {
+        static void Main(string[] args)
+        {
+            Mobile SamsungMobile = new Mobile();
+            SamsungMobile.CallRings += MyMobileRings;
+            SamsungMobile.OnCallRing();
+            Console.ReadLine();
+        }
+
+        public static void MyMobileRings()
+        {
+            Console.WriteLine("My mobile gets a call");
+        }
+    }
+}
+
+
+WINDOW APP
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinApp1
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void btnSayHello_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            MessageBox.Show(btn.Name);
+            MessageBox.Show("Hello World");
+        }
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                MessageBox.Show("Left Click");
+            }
+            else
+            {
+                MessageBox.Show("Right Click");
+            }
+        }
+    }
+}
+
+FORM PROPERTIES
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinApp1
+{
+    public partial class MyForm : Form
+    {
+        int tht;
+        int twd;
+        
+        public MyForm()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Text = "Welcome Form";
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            this.Opacity = 0.5;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.BackgroundImage = Image.FromFile(@"../../images/Desert.jpg");
+                
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            this.BackgroundImage = null;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            this.Opacity = 1;
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            tht = this.Height;
+            twd = this.Width;
+            this.Height = 600;
+            this.Width = 600;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+
+            this.Height = tht;
+            this.Width = twd;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //this.BackColor= color.LightCoral
+            Color mycolor = Color.FromArgb(125, 200, 200);
+            this.BackColor = mycolor;
+        }
+    }
+}
+
+
+OPENING ANOTHER FORM FROM THE EXISTING FORM
+
+//CHANGE HERE
+  public partial class MyForm : Form
+    {
+        int tht;
+        int twd;
+        Form frm;
+//
+
+private void button9_Click(object sender, EventArgs e)
+        {
+            frm = new Form2();
+            frm.StartPosition = FormStartPosition.Manual;
+            frm.Location = new Point(350, 300);
+            //frm.Show
+            DialogResult res = frm.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                MessageBox.Show(frm.Controls["textBox1"].Text);
+            }
+            else
+                MessageBox.Show("Dialog cancelled");
+        }
+//HIDE FORM
+ 
+(to hide the form i,e frm.Hide(); we have to use frm.Show() )
+
+ private void button9_Click(object sender, EventArgs e)
+        {
+            frm = new Form2();
+            frm.StartPosition = FormStartPosition.Manual;
+            frm.Location = new Point(350, 300);
+            frm.Show();
+            /*DialogResult res = frm.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                MessageBox.Show(frm.Controls["textBox1"].Text);
+            }
+            else
+                MessageBox.Show("Dialog cancelled");*/
+        }
+
+	 private void button10_Click(object sender, EventArgs e)
+        {
+            frm.Hide();
+        }
+
+// ADDING 2 NUMBERS, DISPLAYING SUM(READ ONLY TEXT BOX)
+		and CREATING COMBO BOX TO DISPLAY AND SELECT DIFFERENT CITIES
+
+	(add items collection for cities in the property menu)
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinApp1
+{
+    public partial class FormCalculator : Form
+    {
+        public FormCalculator()
+        {
+            InitializeComponent();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int result = 0;
+            try
+            {
+                result = Int32.Parse(textBox1.Text) + Int32.Parse(textBox2.Text);
+                textBox3.Text = result.ToString();
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(comboBox1.SelectedIndex>0)
+            label4.Text = comboBox1.Text;
+
+            comboBox1.Items.Add("");
+        }
+
+        private void FormCalculator_Load(object sender, EventArgs e)
+        {
+            comboBox1.SelectedIndex = 0;
+        }
+    }
+}
+
+
+TIMER:
+//timer properties enabled true
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinApp1
+{
+    public partial class ATCForm3 : Form
+    {
+        static int counter = 0;
+
+        public ATCForm3()
+        {
+            InitializeComponent();
+            label1.Text = "";
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            label1.Text += counter++;
+        }
+
+        private void ATCForm3_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
+
+
+//PICTURE SLIDESHOW
+
+(click on image list img size 255,255 imgbitdepth 32 )
+
+namespace WinApp1
+{
+    public partial class ATCForm3 : Form
+    {
+        static int counter = 0;
+
+        public ATCForm3()
+        {
+            InitializeComponent();
+            //label1.Text = "";
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            //label1.Text += counter++;
+            pictureBox1.Image = imageList1.Images[counter++%8];
+        }
+
+        private void ATCForm3_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
+
+
+//EMPLOYEE FORM
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinApp1
+{
+
+    public partial class FormEmp : Form
+    {
+        string str;
+        public FormEmp()
+        {
+            InitializeComponent();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            str += "Name - " + textBox1.Text + "\n";
+            str += "DOJ - " + dateTimePicker1.Text + "\n";
+            str += "City - " + comboBox2.Text + "\n";
+            str += "Mobile - " + maskedTextBox1.Text + "\n";
+            str += "Skills - ";
+            foreach (string itm in listBox1.SelectedItems)
+            {
+                str += itm + " ";
+            }
+            str += "\n";
+            str += "Experience - ";
+            str += Convert.ToString(numericUpDown1.Value) + "\n";
+            str += "\n";
+            str += "Languages - ";
+            foreach (Object o in groupBox2.Controls)
+            {
+                if (o is CheckBox)
+                    if (((CheckBox)o).Checked == true)
+                        str += ((CheckBox)o).Text + " ";
+            }
+            str += "\n";
+            str += "Gender - ";
+            if (radioButton1.Checked == true)
+                str += radioButton1.Text;
+            else
+                str += radioButton2.Text;
+            MessageBox.Show(str);
+            richTextBox1.Text = str;
+
+            //Create folder test in D: and add a text file named emp1.txt
+		
+            richTextBox1.SaveFile(@"d:\test\emp1.txt", RichTextBoxStreamType.PlainText);
+        }
+
+    }
+}
+
+
+//OPENING MULTIPLE FORMS FROM A SINGLE FORM
+(take menustrip add forms , isMDIContainer = true, widow state = maximized)
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinApp1
+{
+    public partial class MainMDIForm : Form
+    {
+        public MainMDIForm()
+        {
+            InitializeComponent();
+        }
+
+        private void form1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form frm = new MyForm();
+            frm.MdiParent = this;
+            frm.Show();
+        }
+
+        private void form2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form frm = new FormCalculator();
+            frm.MdiParent = this;
+            frm.Show();
+        }
+    }
+}
+
+
+//NOTE: http://www.flounder.com/csharp_color_table.htm  (COLOR CODE ARGB)

@@ -1,0 +1,923 @@
+PROCEDURE:
+
+use Training;
+create table Employee(EmpID int primary key identity(100,1) , EmpName varchar(20), City varchar(20), DeptName varchar(20), Doj Date);
+insert into Employee values('Ram','Kolkata','DotNet','12-02-2012');
+insert into Employee values('Sam','Pune','Java','12-02-2012');
+insert into Employee values('Pam','Kolkata','SAP','12-02-2012');
+insert into Employee values('Lam','Bangalore','Oracle','12-02-2012');
+insert into Employee values('Xam','Chennai','MainFrame','12-02-2012');
+
+select * from Employee;
+
+go
+CREATE PROCEDURE [dbo].[uspAddEmp] 
+	
+	(
+	@ipv_vcEmpName varchar(20),
+	@ipv_vcCity varchar(20),
+	@ipv_vcDeptName varchar(20),
+	@ipv_vcDoj Date
+	)
+	
+AS
+	insert into Employee(EmpName,City,DeptName,Doj) Values(@ipv_vcEmpName, @ipv_vcCity, @ipv_vcDeptName, @ipv_vcDoj)
+	RETURN
+
+go
+CREATE PROCEDURE [dbo].[uspDeleteEmp] 
+	
+	(
+	@ipv_iEmpID int
+	
+	)
+	
+AS
+	Delete from Employee where EmpID = @ipv_iEmpID;
+	RETURN
+
+
+	go
+	CREATE PROCEDURE [dbo].[uspGetAllEmps] 
+	/*
+	(
+	@parameter1 int = 5,
+	@parameter2 datatype OUTPUT
+	)
+	*/
+AS
+	select EmpID,EmpName,City,DeptName,Doj from Employee;
+	RETURN
+
+
+	go
+	CREATE PROCEDURE [dbo].[uspSearchEmp] 
+	
+	(
+	@ipv_iEmpID int
+	
+	)
+	
+AS
+		select EmpID,EmpName,City,DeptName,Doj from Employee where EmpID = @ipv_iEmpID;
+	RETURN
+
+	go
+	CREATE PROCEDURE [dbo].[uspUpdateEmp] 
+	(
+	@ipv_iEmpID int,
+	@ipv_vcEmpName varchar(20),
+	@ipv_vcCity varchar(20),
+	@ipv_vcDeptName varchar(20),
+	@ipv_vcDoj Date
+	)
+AS
+	update Employee set EmpName = @ipv_vcEmpName, City=@ipv_vcCity, DeptName=@ipv_vcDeptName, Doj=@ipv_vcDoj where EmpID = @ipv_iEmpID;
+	RETURN
+
+ENTITY:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Entities
+{
+    public class CEntity
+    {
+
+        public int EmpID { get; set; }
+        public string EmpName { get; set; }
+        public string City { get; set; }
+        public string DeptName { get; set; }
+        public DateTime Doj { get; set; }
+
+    }
+}
+
+
+XAML:
+
+<Window x:Name="EMPLOYMENT_MANAGEMENT_SYSTEM" x:Class="EmpMangSys.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EmpMangSys"
+        mc:Ignorable="d"
+        Title="EMPLOYMENT MANAGEMENT SYSTEM" Height="650" Width="825" FontFamily="Lucida Fax" FontWeight="Bold" Background="AliceBlue">
+    <Grid>
+        <Button x:Name="button" Content="Show All Informations" HorizontalAlignment="Left" Margin="527,10,0,0" VerticalAlignment="Top" Width="280" Height="59" FontSize="21.333" Click="button_Click"/>
+        <TextBox x:Name="textID" HorizontalAlignment="Left" Height="23" Margin="157,57,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="textNAME" HorizontalAlignment="Left" Height="23" Margin="157,120,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="textCITY" HorizontalAlignment="Left" Height="23" Margin="157,176,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="textDEPT" HorizontalAlignment="Left" Height="23" Margin="157,242,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <DatePicker x:Name="Date" HorizontalAlignment="Left" Margin="163,309,0,0" VerticalAlignment="Top"/>
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="335,120,0,0" VerticalAlignment="Top" Height="311" Width="472" SelectionChanged="dataGrid_SelectionChanged"/>
+        <Label x:Name="label" Content="EMP ID" HorizontalAlignment="Left" Margin="49,57,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.427,0.208"/>
+        <Label x:Name="label1" Content="EMP NAME" HorizontalAlignment="Left" Margin="49,116,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.365,3.255"/>
+        <Label x:Name="label2" Content="WELCOME!!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,578,0,0" Width="175" Height="31"/>
+        <Label x:Name="label3" Content="CITY" HorizontalAlignment="Left" Margin="49,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.418,2.636"/>
+        <Label x:Name="label4" Content="DEPT NAME" HorizontalAlignment="Left" Margin="49,242,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label5" Content="DATE OF JOIN" HorizontalAlignment="Left" Margin="49,308,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.472,1.063"/>
+        <Button x:Name="button1" Content="ADD" HorizontalAlignment="Left" Margin="49,475,0,0" VerticalAlignment="Top" Width="83" Height="43" Click="button1_Click"/>
+        <Button x:Name="button2" Content="SEARCH" HorizontalAlignment="Left" Margin="254,475,0,0" VerticalAlignment="Top" Width="83" Height="43" Click="button2_Click"/>
+        <Button x:Name="button3" Content="UPDATE" HorizontalAlignment="Left" Margin="460,475,0,0" VerticalAlignment="Top" Width="83" Height="43" Click="button3_Click"/>
+        <Button x:Name="button4" Content="DELETE" HorizontalAlignment="Left" Margin="667,475,0,0" VerticalAlignment="Top" Width="83" Height="43" Click="button4_Click"/>
+
+    </Grid>
+</Window>
+
+
+EXCEPTION:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CException
+{
+    public class Exceptions : ApplicationException
+    {
+
+        public Exceptions()
+            : base()
+        {
+        }
+
+        public Exceptions(string message)
+            : base(message)
+        {
+        }
+        public Exceptions(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+    }
+}
+
+
+DAL:
+
+DALCLASS-
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.Common;
+using Entities;
+using CException;
+
+namespace CDal
+{
+    public class DalClass
+    {
+        public bool AddEmpDAL(CEntity newEmp)
+        {
+            bool empAdded = false;
+            try
+            {
+                DbCommand command = DalConnection.CreateCommand();
+                command.CommandText = "uspAddEmp";
+
+                DbParameter param = command.CreateParameter();
+                //param.ParameterName = "@ipv_iEmpID";
+                //param.DbType = DbType.Int32;
+                //param.Value = newEmp.EmpID;
+                //command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcEmpName";
+                param.DbType = DbType.String;
+                param.Value = newEmp.EmpName;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcCity";
+                param.DbType = DbType.String;
+                param.Value = newEmp.City;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcDeptName";
+                param.DbType = DbType.String;
+                param.Value = newEmp.DeptName;
+                command.Parameters.Add(param);
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcDoj";
+                param.DbType = DbType.Date;
+                param.Value = newEmp.Doj;
+                command.Parameters.Add(param);
+
+                int affectedRows = DalConnection.ExecuteNonQueryCommand(command);
+
+                if (affectedRows > 0)
+                    empAdded = true;
+            }
+            catch (DbException ex)
+            {
+                string errormessage;
+
+                switch (ex.ErrorCode)
+                {
+                    case -2146232060:
+                        errormessage = "Database Does NotExists Or AccessDenied";
+                        break;
+                    default:
+                        errormessage = ex.Message;
+                        break;
+                }
+                throw new Exceptions(errormessage);
+            }
+            return empAdded;
+        }
+
+        public List<CEntity> GetAllEmpsDAL()
+        {
+            List<CEntity> empList = null;
+            try
+            {
+                DbCommand command = DalConnection.CreateCommand();
+                command.CommandText = "uspGetAllEmps";
+
+
+
+                DataTable dataTable = DalConnection.ExecuteSelectCommand(command);
+                if (dataTable.Rows.Count > 0)
+                {
+                    empList = new List<CEntity>();
+                    for (int rowCounter = 0; rowCounter < dataTable.Rows.Count; rowCounter++)
+                    {
+                        CEntity emp = new CEntity();
+                        emp.EmpID = (int)dataTable.Rows[rowCounter][0];
+                        emp.EmpName = (string)dataTable.Rows[rowCounter][1];
+                        emp.City = (string)dataTable.Rows[rowCounter][2];
+                        emp.DeptName = (string)dataTable.Rows[rowCounter][3];
+                        emp.Doj = (DateTime)dataTable.Rows[rowCounter][4];
+                        empList.Add(emp);
+                    }
+                }
+            }
+            catch (DbException ex)
+            {
+                throw new Exceptions(ex.Message);
+            }
+            return empList;
+        }
+
+
+
+        public CEntity SearchEmpDAL(int searchEmpID)
+        {
+            CEntity searchEmp = null;
+            try
+            {
+                DbCommand command = DalConnection.CreateCommand();
+                command.CommandText = "uspSearchEmp";
+
+                DbParameter param = command.CreateParameter();
+                param.ParameterName = "@ipv_iEmpID";
+                param.DbType = DbType.Int32;
+                param.Value = searchEmpID;
+                command.Parameters.Add(param);
+
+                DataTable dataTable = DalConnection.ExecuteSelectCommand(command);
+                if (dataTable.Rows.Count > 0)
+                {
+                    searchEmp = new CEntity();
+                    searchEmp.EmpID = (int)dataTable.Rows[0][0];
+                    searchEmp.EmpName = (string)dataTable.Rows[0][1];
+                    searchEmp.City = (string)dataTable.Rows[0][2];
+                    searchEmp.DeptName = (string)dataTable.Rows[0][3];
+                    searchEmp.Doj = (DateTime)dataTable.Rows[0][4];
+
+                }
+            }
+            catch (DbException ex)
+            {
+                throw new Exceptions(ex.Message);
+            }
+            return searchEmp;
+        }
+
+
+
+        public bool UpdateEmpDAL(CEntity updateEmp)
+        {
+            bool empUpdated = false;
+            try
+            {
+                DbCommand command = DalConnection.CreateCommand();
+                command.CommandText = "uspUpdateEmp";
+
+                DbParameter param = command.CreateParameter();
+                param.ParameterName = "@ipv_iEmpID";
+                param.DbType = DbType.Int32;
+                param.Value = updateEmp.EmpID;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcEmpName";
+                param.DbType = DbType.String;
+                param.Value = updateEmp.EmpName;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcCity";
+                param.DbType = DbType.String;
+                param.Value = updateEmp.City;
+                command.Parameters.Add(param);
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcDeptName";
+                param.DbType = DbType.String;
+                param.Value = updateEmp.DeptName;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcDoj";
+                param.DbType = DbType.String;
+                param.Value = updateEmp.Doj;
+                command.Parameters.Add(param);
+
+
+                int affectedRows = DalConnection.ExecuteNonQueryCommand(command);
+
+                if (affectedRows > 0)
+                    empUpdated = true;
+            }
+            catch (DbException ex)
+            {
+                throw new Exceptions(ex.Message);
+            }
+            return empUpdated;
+        }
+
+
+        public bool DeleteEmpDAL(int deleteEmpID)
+        {
+            bool empDeleted = false;
+            try
+            {
+                DbCommand command = DalConnection.CreateCommand();
+                command.CommandText = "uspDeleteEmp";
+
+                DbParameter param = command.CreateParameter();
+                param.ParameterName = "@ipv_iEmpID";
+                param.DbType = DbType.Int32;
+                param.Value = deleteEmpID;
+                command.Parameters.Add(param);
+
+                int affectedRows = DalConnection.ExecuteNonQueryCommand(command);
+
+                if (affectedRows > 0)
+                    empDeleted = true;
+            }
+            catch (DbException ex)
+            {
+                throw new Exceptions(ex.Message);
+            }
+            return empDeleted;
+
+        }
+
+    }
+
+
+DATA CONNECTION:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+
+using System.Data.Common;
+
+namespace CDal
+{
+    class DalConnection
+    {
+
+        //Creates and prepare a new DBCommand object on a new Connection
+        public static DbCommand CreateCommand()
+        {
+            //Obtain the database provider name
+            string dataProviderName = DalConfiguration.ProviderName;
+
+            //Obtain the database ConnectionString
+            string connectionString = DalConfiguration.ConnectionString;
+
+            //Create a New Data Provider Factory
+            DbProviderFactory factory = DbProviderFactories.GetFactory(dataProviderName);
+
+            //Obtain the Database specific connection object
+            DbConnection connection = factory.CreateConnection();
+
+            //Set the Connection string
+            connection.ConnectionString = connectionString;
+
+            //Create a Database specific command Object
+            DbCommand command = connection.CreateCommand();
+
+            //Set the command Type to Stored Procedure
+            command.CommandType = CommandType.StoredProcedure;
+
+            //Return the Initialized Command Object
+            return command;
+        }
+
+        // Execute a select command and returns Records as DataTable
+        public static DataTable ExecuteSelectCommand(DbCommand command)
+        {
+            //The Datatable to be returned
+            DataTable dataTable = null;
+            //Execute the command making sure the connection gets closed in the end
+            try
+            {
+                //open the connection
+                command.Connection.Open();
+                //Execute the Command and store the results in a datatable
+                DbDataReader dataReader = command.ExecuteReader();
+                dataTable = new DataTable();
+                dataTable.Load(dataReader);
+                //Close the reader
+                dataReader.Close();
+            }
+            catch (DbException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                //Close the Connection
+                if (command.Connection.State == ConnectionState.Open)
+                    command.Connection.Close();
+            }
+            return dataTable;
+        }
+
+        // execute an update, delete, or insert command 
+        // and return the number of affected rows
+        public static int ExecuteNonQueryCommand(DbCommand command)
+        {
+            // The number of affected rows 
+            int affectedRows = -1;
+            // Execute the command making sure the connection gets closed in the end
+            try
+            {
+                // Open the connection of the command
+                command.Connection.Open();
+                // Execute the command and get the number of affected rows
+                affectedRows = command.ExecuteNonQuery();
+            }
+            catch (DbException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                //Close the Connection
+                if (command.Connection.State == ConnectionState.Open)
+                    command.Connection.Close();
+            }
+            // return the number of affected rows
+            return affectedRows;
+        }
+
+        // execute a select command and return a single result as a string
+        public static object ExecuteScalarCommand(DbCommand command)
+        {
+
+            // The value to be returned 
+            object result = null;
+            // Execute the command making sure the connection gets closed in the end
+            try
+            {
+                // Open the connection of the command
+                command.Connection.Open();
+                // Execute the command and get the aggregate value
+                result = command.ExecuteScalar();
+            }
+            catch (DbException ex)
+            {
+                throw ex;
+            }
+
+            finally
+            {
+                //Close the Connection
+                if (command.Connection.State == ConnectionState.Open)
+                    command.Connection.Close();
+            }
+            // return the result
+            return result;
+        }
+
+    }
+}
+
+
+DATA CONFIGURATION:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Configuration;
+
+namespace CDal
+{
+    class DalConfiguration
+    {
+        private static string providerName;
+
+        public static string ProviderName
+        {
+            get { return DalConfiguration.providerName; }
+            set { DalConfiguration.providerName = value; }
+        }
+        private static string connectionString;
+
+        public static string ConnectionString
+        {
+            get { return DalConfiguration.connectionString; }
+            set { DalConfiguration.connectionString = value; }
+        }
+
+        static DalConfiguration()
+        {
+            providerName = ConfigurationManager.ConnectionStrings["Training"].ProviderName;
+            connectionString = ConfigurationManager.ConnectionStrings["Training"].ConnectionString;
+
+        }
+
+    }
+}
+
+
+BAL:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CException;
+using CDal;
+using Entities;
+
+namespace CBal
+{
+    public class BalClass
+    {
+
+        private static bool ValidateEmp(CEntity emp)
+        {
+            StringBuilder sb = new StringBuilder();
+            bool validEmp = true;
+            //if (emp.EmpID <= 0)
+            //{
+            //    validEmp = false;
+            //    sb.Append(Environment.NewLine + "Invalid Employee ID");
+
+            //}
+            if (emp.EmpName == string.Empty)
+            {
+                validEmp = false;
+                sb.Append(Environment.NewLine + "Employee Name Required");
+
+            }
+
+            if (emp.City == string.Empty)
+            {
+                validEmp = false;
+                sb.Append(Environment.NewLine + "City Required");
+
+            }
+
+            if (emp.DeptName == string.Empty)
+            {
+                validEmp = false;
+                sb.Append(Environment.NewLine + "Department Name Required");
+
+            }
+
+            if (emp.Doj > DateTime.Today)
+            {
+                validEmp = false;
+                sb.Append(Environment.NewLine + "Invalid date of join");
+
+            }
+
+            if (validEmp == false)
+                throw new Exceptions(sb.ToString());
+            return validEmp;
+        }
+
+        public static bool AddEmpBL(CEntity newEmp)
+        {
+            bool empAdded = false;
+            try
+            {
+                if (ValidateEmp(newEmp))
+                {
+                    DalClass empDAL = new DalClass();
+                    empAdded = empDAL.AddEmpDAL(newEmp);
+                }
+            }
+            catch (Exceptions)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return empAdded;
+        }
+
+        public static List<CEntity> GetAllEmpsBL()
+        {
+            List<CEntity> empList = null;
+            try
+            {
+                DalClass empDAL = new DalClass();
+                empList = empDAL.GetAllEmpsDAL();
+            }
+            catch (Exceptions ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return empList;
+        }
+
+        public static CEntity SearchEmpBL(int searchEmpID)
+        {
+            CEntity searchEmp = null;
+            try
+            {
+                DalClass empDAL = new DalClass();
+                searchEmp = empDAL.SearchEmpDAL(searchEmpID);
+            }
+            catch (Exceptions ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return searchEmp;
+
+        }
+
+        public static bool UpdateEmpBL(CEntity updateEmp)
+        {
+            bool empUpdated = false;
+            try
+            {
+                if (ValidateEmp(updateEmp))
+                {
+                    DalClass empDAL = new DalClass();
+                    empUpdated = empDAL.UpdateEmpDAL(updateEmp);
+                }
+            }
+            catch (Exceptions)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return empUpdated;
+        }
+
+        public static bool DeleteEmpBL(int deleteEmpID)
+        {
+            bool empDeleted = false;
+            try
+            {
+                if (deleteEmpID > 0)
+                {
+                    DalClass empDAL = new DalClass();
+                    empDeleted = empDAL.DeleteEmpDAL(deleteEmpID);
+                }
+                else
+                {
+                    throw new Exceptions("Invalid Employee ID");
+                }
+            }
+            catch (Exceptions)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return empDeleted;
+        }
+
+    }
+}
+
+
+WPF:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using CBal;
+using Entities;
+using CException;
+
+namespace EmpMangSys
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            List<CEntity> empList = BalClass.GetAllEmpsBL();
+            dataGrid.ItemsSource = empList;
+
+        }
+
+        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(dataGrid.SelectedIndex>=0)
+            {
+                CEntity g = (CEntity)(object)dataGrid.SelectedItem;
+                textID.Text = g.EmpID.ToString();
+                textNAME.Text = g.EmpName;
+                textCITY.Text = g.City;
+                textDEPT.Text = g.DeptName;
+                Date.SelectedDate = (DateTime)g.Doj;
+            }
+
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int searchEmpID = Convert.ToInt32(textID.Text);
+
+
+                CEntity searchEmp = BalClass.SearchEmpBL(searchEmpID);
+                if (searchEmp != null)
+                {
+                    textNAME.Text = searchEmp.EmpName;
+                    textCITY.Text = searchEmp.City;
+                    textDEPT.Text = searchEmp.DeptName;
+                    Date.SelectedDate = searchEmp.Doj;
+                    label2.Content = "Employee Details Available";
+
+                }
+                else
+                {
+                    label2.Content = "No Guest Details Available";
+                }
+
+            }
+            catch (Exceptions ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        private void button3_Click(object sender, RoutedEventArgs e)
+        {
+
+            try
+            {
+                int updateEmpID = Convert.ToInt32(textID.Text);
+
+                CEntity updatedEmp = BalClass.SearchEmpBL(updateEmpID);
+                if (updatedEmp != null)
+                {
+
+                    updatedEmp.EmpName = textNAME.Text;
+                    updatedEmp.City = textCITY.Text;
+                    updatedEmp.DeptName = textDEPT.Text;
+                    updatedEmp.Doj = (DateTime)Date.SelectedDate;
+                    bool empUpdated = BalClass.UpdateEmpBL(updatedEmp);
+                    if (empUpdated)
+                        label2.Content = ("Employee Details Updated");
+                    else
+                        label2.Content = ("Employee Details not Updated ");
+                }
+                else
+                {
+                    label2.Content = ("No Employee Details Available");
+                }
+
+
+            }
+            catch (Exceptions ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void button4_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int deleteEmpID = Convert.ToInt32(textID.Text);
+
+
+                CEntity deleteEmp = BalClass.SearchEmpBL(deleteEmpID);
+                if (deleteEmp != null)
+                {
+                    bool empdeleted = BalClass.DeleteEmpBL(deleteEmpID);
+                    if (empdeleted)
+                        label2.Content = ("Employee Deleted");
+                    else
+                        label2.Content = ("Employee not Deleted ");
+                }
+                else
+                {
+                    MessageBox.Show("No Employee Details Available");
+                }
+
+
+            }
+            catch (Exceptions ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                CEntity newEmp = new CEntity();
+
+                //newEmp.EmpID = Convert.ToInt32(textID.Text);
+                newEmp.EmpName = textNAME.Text;
+                newEmp.City = textCITY.Text;
+                newEmp.DeptName = textDEPT.Text;
+                newEmp.Doj = (DateTime)Date.SelectedDate;
+                bool empAdded = BalClass.AddEmpBL(newEmp);
+                if (empAdded)
+                    label2.Content = ("Employee Added");
+                else
+                    label2.Content = ("Employee not Added");
+            }
+            catch (Exceptions ex)
+            {
+                label2.Content = (ex.Message);
+            }
+
+        }
+    }
+}

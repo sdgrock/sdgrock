@@ -1,0 +1,219 @@
+MAIN WINDOW.XAML.CS CODE:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Data.Entity;
+
+namespace DbFirstApproach
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    /// 
+    
+    public partial class MainWindow : Window
+    {
+        static bool insertready = false;
+
+        List<Album> listobj = new List<Album>();
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            TrainingEntities context = new TrainingEntities();
+
+            try
+            {
+                int count = context.Albums.Count();
+
+                if (count > 0)
+                {
+
+
+                    dataGrid.ItemsSource = context.Albums.ToList();
+                }
+                else
+                {
+                    MessageBox.Show("No records available");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+        }
+
+        //private void clearField()
+        //{
+        //    textid.Clear();
+        //    textname.Clear();
+        //    textgenre.Clear();
+        //    textyr.Clear();
+        //    textprc.Clear();
+
+        //}
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            TrainingEntities context = new TrainingEntities();
+
+            Album entobj = new Album();
+
+            var entlist = context.Albums.ToList();
+
+            int count = entlist.Count() -1 ;
+
+            if (!insertready)
+            {
+                entobj = entlist.ElementAt(count);
+                //clearField();
+                textid.Text = (entobj.AlbumId + 1).ToString();
+                //textid.IsReadOnly = true;
+                insertready = true;
+            }
+
+            else
+            {
+                try
+                {
+                    entobj.Name = textname.Text;
+                    entobj.Genre = textgenre.Text;
+                    entobj.Year = Convert.ToInt32(textyr.Text);
+                    entobj.Price = Convert.ToDecimal(textprc.Text);
+                    context.Albums.Add(entobj);
+                    //context.SaveChanges();
+                    MessageBox.Show("Added");
+                    context.SaveChanges();
+
+                    insertready = false;
+                    //textid.IsReadOnly = false;
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+        private void btnUpdt_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TrainingEntities context = new TrainingEntities();
+
+                Album entobj = new Album();
+
+                int id = Convert.ToInt32(textid.Text);
+
+                var query = (from tch in context.Albums.Where(
+                             tch => tch.AlbumId == id)
+                             select tch).FirstOrDefault();
+
+                if (query != null)
+                {
+                    query.Name = textname.Text;
+                    query.Genre = textgenre.Text;
+                    query.Year = Convert.ToInt32(textyr.Text);
+                    query.Price = Convert.ToDecimal(textprc.Text);
+                }
+
+
+                int saved = context.SaveChanges();
+
+                if (saved > 0)
+                {
+                    MessageBox.Show("Album Successfully Updated");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dataGrid.SelectedIndex >= 0)
+            {
+                TrainingEntities context = new TrainingEntities();
+
+                Album entobj = new Album();
+
+                entobj = (Album)(object)dataGrid.SelectedItem;
+
+                textid.Text = entobj.AlbumId.ToString();
+                textname.Text = entobj.Name;
+                textgenre.Text = entobj.Genre;
+                textyr.Text = entobj.Year.ToString();
+                textprc.Text = entobj.Price.ToString();
+            }
+        }
+
+        private void btnSrch_Click(object sender, RoutedEventArgs e)
+        {
+            TrainingEntities context = new TrainingEntities();
+
+            int id = Convert.ToInt32(textid.Text);
+
+            var entobj = (from tch in context.Albums.Where(
+                          tch => tch.AlbumId == id)
+                          select tch).FirstOrDefault();
+
+
+            if (entobj != null)
+            {
+                textname.Text = entobj.Name;
+                textgenre.Text = entobj.Genre;
+                textyr.Text = entobj.Year.ToString();
+                textprc.Text = entobj.Price.ToString();
+            }
+            else
+            {
+                MessageBox.Show("No such record available");
+            }
+        }
+
+        private void btnDlt_Click(object sender, RoutedEventArgs e)
+        {
+            TrainingEntities context = new TrainingEntities();
+
+            int id = Convert.ToInt32(textid.Text);
+            var entobj = (from tech in context.Albums.Where(
+                          tech => tech.AlbumId == id)
+                          select tech).FirstOrDefault();
+
+            if (entobj != null)
+            {
+                context.Albums.Remove(entobj);
+
+            }
+            if (context.SaveChanges() > 0)
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("No such record available");
+            }
+
+        }
+    
+    }
+}

@@ -1,0 +1,1022 @@
+create table PhoneBook(GuestID int Primary Key,GuestName varchar(20),PhoneNumber varchar(10));
+insert into PhoneBook values(101,'Karthik',9874563210);
+insert into PhoneBook values(102,'Sohini',9974563210);
+insert into PhoneBook values(103,'Arundhuti',8874563210);
+insert into PhoneBook values(104,'Deep',7874563210);
+insert into PhoneBook values(105,'Anshit',5874563210);
+insert into PhoneBook values(106,'Aisha',6874563210);
+select * from PhoneBook;
+
+go
+CREATE PROCEDURE [dbo].[uspAddGuest] 
+	
+	(
+	@ipv_iGuestID int,
+	@ipv_vcGuestName varchar(25),
+	@ipv_vcGuestContactNumber varchar(15)
+	)
+	
+AS
+	insert into PhoneBook(GuestID,GuestName,PhoneNumber) Values(@ipv_iGuestID,@ipv_vcGuestName,@ipv_vcGuestContactNumber)
+	RETURN
+
+go
+CREATE PROCEDURE [dbo].[uspDeleteGuest] 
+	
+	(
+	@ipv_iGuestID int
+	
+	)
+	
+AS
+	Delete from PhoneBook where GuestID = @ipv_iGuestID;
+	RETURN
+
+	go
+	CREATE PROCEDURE [dbo].[uspGetAllGuests] 
+	/*
+	(
+	@parameter1 int = 5,
+	@parameter2 datatype OUTPUT
+	)
+	*/
+AS
+	select GuestID,GuestName,PhoneNumber from PhoneBook;
+	RETURN
+
+	go
+	CREATE PROCEDURE [dbo].[uspSearchGuest] 
+	
+	(
+	@ipv_iGuestID int
+	
+	)
+	
+AS
+		select GuestID,GuestName,PhoneNumber from PhoneBook where GuestID = @ipv_iGuestID;
+	RETURN
+
+	go
+	CREATE PROCEDURE [dbo].[uspUpdateGuest] 
+	(
+	@ipv_iGuestID int,
+	@ipv_vcGuestName varchar(25),
+	@ipv_vcGuestContactNumber varchar(15)
+	)
+AS
+	update PhoneBook set GuestName = @ipv_vcGuestName,PhoneNumber = @ipv_vcGuestContactNumber where GuestID = @ipv_iGuestID;
+	RETURN
+
+
+XAML FILE:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using IGATEPATNI.GuestPhoneBook.BL;
+using IGATEPATNI.GuestPhoneBook.Entities;
+using IGATEPATNI.GuestPhoneBook.Exceptions;
+
+namespace Designwpf
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+             List<Guest> guestList = GuestBL.GetAllGuestsBL();
+             dataGrid.ItemsSource = guestList;
+        }
+
+        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Guest g = (Guest)(object)dataGrid.SelectedItem;
+            textboxID.Text = g.GuestID.ToString();
+            textboxName.Text = g.GuestName;
+            contactNumber.Text = g.GuestContactNumber;
+        }
+
+        private void find_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int searchGuestID=Convert.ToInt32(textboxID.Text);
+
+
+                Guest searchGuest = GuestBL.SearchGuestBL(searchGuestID);
+                if (searchGuest != null)
+                {
+                     textboxName.Text = searchGuest.GuestName ;
+                     contactNumber.Text = searchGuest.GuestContactNumber;
+                     label.Content = "Guest Details Available";
+                     
+                }
+                else
+                {
+                    label.Content="No Guest Details Available";
+                }
+
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void update_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int updateGuestID=Convert.ToInt32(textboxID.Text);
+  
+                Guest updatedGuest = GuestBL.SearchGuestBL(updateGuestID);
+                if (updatedGuest != null)
+                {
+
+                    updatedGuest.GuestName = textboxName.Text;
+
+                    updatedGuest.GuestContactNumber = contactNumber.Text;
+                    bool guestUpdated = GuestBL.UpdateGuestBL(updatedGuest);
+                    if (guestUpdated)
+                        label.Content=("Guest Details Updated");
+                    else
+                        label.Content = ("Guest Details not Updated ");
+                }
+                else
+                {
+                    label.Content = ("No Guest Details Available");
+                }
+
+
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void delete_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int deleteGuestID = Convert.ToInt32(textboxID.Text);
+               
+                
+                Guest deleteGuest = GuestBL.SearchGuestBL(deleteGuestID);
+                if (deleteGuest != null)
+                {
+                    bool guestdeleted = GuestBL.DeleteGuestBL(deleteGuestID);
+                    if (guestdeleted)
+                        label.Content= ("Guest Deleted");
+                    else
+                        label.Content = ("Guest not Deleted ");
+                }
+                else
+                {
+                    MessageBox.Show("No Guest Details Available");
+                }
+
+
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void addnewguest_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Guest newGuest = new Guest();
+
+                newGuest.GuestID = Convert.ToInt32(textboxID.Text);
+                
+                newGuest.GuestName = textboxName.Text;
+                
+                newGuest.GuestContactNumber = contactNumber.Text;
+                bool guestAdded = GuestBL.AddGuestBL(newGuest);
+                if (guestAdded)
+                    label.Content = ("Guest Added");
+                else
+                    label.Content = ("Guest not Added");
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                label.Content=(ex.Message);
+            }
+        }
+    }
+}
+
+
+APP.CONFIG
+
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <connectionStrings>
+    <!-- Specifying the absolute Path (.mdf file Directory)-->
+    <add name="GuestPhoneBook" connectionString="Data Source=.;Initial Catalog=GuestPhoneBook;Integrated Security=True" providerName="System.Data.SqlClient"/>
+
+    <!-- Specifying the Directory where the EXE Resides (Deployment) -->
+    <!--
+    <add name="phoneBookConnection" connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=Data Source=.\SQLEXPRESS;AttachDbFilename=C:\Users\Karthik\Desktop\GuestPhoneBook\IGate.GuestPhoneBook.PresentationLayer\DataBase\Guest.mdf;Integrated Security=True;User Instance=True" providerName="System.Data.SqlClient"/>
+    -->
+  </connectionStrings>
+</configuration>
+
+BAL:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using IGATEPATNI.GuestPhoneBook.Entities;
+using IGATEPATNI.GuestPhoneBook.Exceptions;
+using IGATEPATNI.GuestPhoneBook.DAL;
+
+namespace IGATEPATNI.GuestPhoneBook.BL
+{
+    public class GuestBL
+    {
+
+        private static bool ValidateGuest(Guest guest)
+        {
+            StringBuilder sb = new StringBuilder();
+            bool validGuest = true;
+            if (guest.GuestID <= 0)
+            {
+                validGuest = false;
+                sb.Append(Environment.NewLine + "Invalid Guest ID");
+
+            }
+            if (guest.GuestName == string.Empty)
+            {
+                validGuest = false;
+                sb.Append(Environment.NewLine + "Guest Name Required");
+
+            }
+            if (guest.GuestContactNumber.Length < 10)
+            {
+                validGuest = false;
+                sb.Append(Environment.NewLine + "Required 10 Digit Contact Number");
+            }
+            if (validGuest == false)
+                throw new GuestPhoneBookException(sb.ToString());
+            return validGuest;
+        }
+
+        public static bool AddGuestBL(Guest newGuest)
+        {
+            bool guestAdded = false;
+            try
+            {
+                if (ValidateGuest(newGuest))
+                {
+                    GuestDAL guestDAL = new GuestDAL();
+                    guestAdded = guestDAL.AddGuestDAL(newGuest);
+                }
+            }
+            catch (GuestPhoneBookException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return guestAdded;
+        }
+
+        public static List<Guest> GetAllGuestsBL()
+        {
+            List<Guest> guestList = null;
+            try
+            {
+                GuestDAL guestDAL = new GuestDAL();
+                guestList = guestDAL.GetAllGuestsDAL();
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return guestList;
+        }
+
+        public static Guest SearchGuestBL(int searchGuestID)
+        {
+            Guest searchGuest = null;
+            try
+            {
+                GuestDAL guestDAL = new GuestDAL();
+                searchGuest = guestDAL.SearchGuestDAL(searchGuestID);
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return searchGuest;
+
+        }
+
+        public static bool UpdateGuestBL(Guest updateGuest)
+        {
+            bool guestUpdated = false;
+            try
+            {
+                if (ValidateGuest(updateGuest))
+                {
+                    GuestDAL guestDAL = new GuestDAL();
+                    guestUpdated = guestDAL.UpdateGuestDAL(updateGuest);
+                }
+            }
+            catch (GuestPhoneBookException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return guestUpdated;
+        }
+
+        public static bool DeleteGuestBL(int deleteGuestID)
+        {
+            bool guestDeleted = false;
+            try
+            {
+                if (deleteGuestID > 0)
+                {
+                    GuestDAL guestDAL = new GuestDAL();
+                    guestDeleted = guestDAL.DeleteGuestDAL(deleteGuestID);
+                }
+                else
+                {
+                    throw new GuestPhoneBookException("Invalid Guest ID");
+                }
+            }
+            catch (GuestPhoneBookException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return guestDeleted;
+        }
+    }      
+}
+
+
+PRESENTATION LAYER:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using IGATEPATNI.GuestPhoneBook.Entities;
+using IGATEPATNI.GuestPhoneBook.BL;
+using IGATEPATNI.GuestPhoneBook.Exceptions;
+
+namespace IGATEPATNI.GuestPhoneBook.ConsolePL
+{
+    class GuestPhoneBookTest
+    {
+        static void Main(string[] args)
+        {
+            int choice;
+            do
+            {
+                PrintMenu();
+                Console.WriteLine("Enter your Choice:");
+                choice = Convert.ToInt32(Console.ReadLine());
+                switch (choice)
+                {
+                    case 1:
+                        AddGuest();
+                        break;
+                    case 2:
+                        ListAllGuests();
+                        break;
+                    case 3:
+                        SearchGuestByID();
+                        break;
+                    case 4:
+                        UpdateGuest();
+                        break;
+                    case 5:
+                        DeleteGuest();
+                        break;
+                    case 6:
+                        return;
+                    default:
+                        Console.WriteLine("Invalid Choice");
+                        break;
+                }
+            } while (choice != -1);
+        }
+
+        private static void DeleteGuest()
+        {
+            try
+            {
+                int deleteGuestID;
+                Console.WriteLine("Enter GuestID to Delete:");
+                deleteGuestID = Convert.ToInt32(Console.ReadLine());
+                Guest deleteGuest = GuestBL.SearchGuestBL(deleteGuestID);
+                if (deleteGuest != null)
+                {
+                    bool guestdeleted = GuestBL.DeleteGuestBL(deleteGuestID);
+                    if (guestdeleted)
+                        Console.WriteLine("Guest Deleted");
+                    else
+                        Console.WriteLine("Guest not Deleted ");
+                }
+                else
+                {
+                    Console.WriteLine("No Guest Details Available");
+                }
+
+
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static void UpdateGuest()
+        {
+            try
+            {
+                int updateGuestID;
+                Console.WriteLine("Enter GuestID to Update Details:");
+                updateGuestID = Convert.ToInt32(Console.ReadLine());
+                Guest updatedGuest = GuestBL.SearchGuestBL(updateGuestID);
+                if (updatedGuest != null)
+                {
+                    Console.WriteLine("Update Guest Name :");
+                    updatedGuest.GuestName = Console.ReadLine();
+                    Console.WriteLine("Update PhoneNumber :");
+                    updatedGuest.GuestContactNumber = Console.ReadLine();
+                    bool guestUpdated = GuestBL.UpdateGuestBL(updatedGuest);
+                    if (guestUpdated)
+                        Console.WriteLine("Guest Details Updated");
+                    else
+                        Console.WriteLine("Guest Details not Updated ");
+                }
+                else
+                {
+                    Console.WriteLine("No Guest Details Available");
+                }
+
+
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static void SearchGuestByID()
+        {
+            try
+            {
+                int searchGuestID;
+                Console.WriteLine("Enter GuestID to Search:");
+                searchGuestID = Convert.ToInt32(Console.ReadLine());
+                Guest searchGuest = GuestBL.SearchGuestBL(searchGuestID);
+                if (searchGuest != null)
+                {
+                    Console.WriteLine("******************************************************************************");
+                    Console.WriteLine("GuestID\t\tName\t\tPhoneNumber");
+                    Console.WriteLine("******************************************************************************");
+                    Console.WriteLine("{0}\t\t{1}\t\t{2}", searchGuest.GuestID, searchGuest.GuestName, searchGuest.GuestContactNumber);
+                    Console.WriteLine("******************************************************************************");
+                }
+                else
+                {
+                    Console.WriteLine("No Guest Details Available");
+                }
+
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+
+        private static void ListAllGuests()
+        {
+            try
+            {
+                List<Guest> guestList = GuestBL.GetAllGuestsBL();
+                if (guestList != null)
+                {
+                    Console.WriteLine("******************************************************************************");
+                    Console.WriteLine("GuestID\t\tName\t\tPhoneNumber");
+                    Console.WriteLine("******************************************************************************");
+                    foreach (Guest guest in guestList)
+                    {
+                        Console.WriteLine("{0}\t\t{1}\t\t{2}", guest.GuestID, guest.GuestName, guest.GuestContactNumber);
+                    }
+                    Console.WriteLine("******************************************************************************");
+
+                }
+                else
+                {
+                    Console.WriteLine("No Guest Details Available");
+                }
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static void AddGuest()
+        {
+            try
+            {
+                Guest newGuest = new Guest();
+                Console.WriteLine("Enter GuestID :");
+                newGuest.GuestID = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Enter Guest Name :");
+                newGuest.GuestName = Console.ReadLine();
+                Console.WriteLine("Enter PhoneNumber :");
+                newGuest.GuestContactNumber = Console.ReadLine();
+                bool guestAdded = GuestBL.AddGuestBL(newGuest);
+                if (guestAdded)
+                    Console.WriteLine("Guest Added");
+                else
+                    Console.WriteLine("Guest not Added");
+            }
+            catch (GuestPhoneBookException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static void PrintMenu()
+        {
+            Console.WriteLine("\n***********Guest PhoneBook Menu***********");
+            Console.WriteLine("1. Add Guest");
+            Console.WriteLine("2. List All Guests");
+            Console.WriteLine("3. Search Guest by ID");
+            Console.WriteLine("4. Update Guest");
+            Console.WriteLine("5. Delete Guest");
+            Console.WriteLine("6. Exit");
+            Console.WriteLine("******************************************\n");
+
+        }
+
+    }
+
+}
+
+
+DAL:
+1. DATA CONNECTION - 
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data.Common;
+using System.Data;
+
+namespace IGATEPATNI.GuestPhoneBook.DAL
+{
+    public class DataConnection
+    {
+        //Creates and prepare a new DBCommand object on a new Connection
+        public static DbCommand CreateCommand()
+        {
+            //Obtain the database provider name
+            string dataProviderName = PhoneBookConfiguration.ProviderName;
+
+            //Obtain the database ConnectionString
+            string connectionString = PhoneBookConfiguration.ConnectionString;
+
+            //Create a New Data Provider Factory
+            DbProviderFactory factory = DbProviderFactories.GetFactory(dataProviderName);
+
+            //Obtain the Database specific connection object
+            DbConnection connection = factory.CreateConnection();
+
+            //Set the Connection string
+            connection.ConnectionString = connectionString;
+
+            //Create a Database specific command Object
+            DbCommand command = connection.CreateCommand();
+
+            //Set the command Type to Stored Procedure
+            command.CommandType = CommandType.StoredProcedure;
+
+            //Return the Initialized Command Object
+            return command;
+        }
+
+        // Execute a select command and returns Records as DataTable
+        public static DataTable ExecuteSelectCommand(DbCommand command)
+        {
+            //The Datatable to be returned
+            DataTable dataTable = null;
+            //Execute the command making sure the connection gets closed in the end
+            try
+            {
+                //open the connection
+                command.Connection.Open();
+                //Execute the Command and store the results in a datatable
+                DbDataReader dataReader = command.ExecuteReader();
+                dataTable = new DataTable();
+                dataTable.Load(dataReader);
+                //Close the reader
+                dataReader.Close();
+            }
+            catch (DbException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                //Close the Connection
+                if (command.Connection.State == ConnectionState.Open)
+                    command.Connection.Close();
+            }
+            return dataTable;
+        }
+
+        // execute an update, delete, or insert command 
+        // and return the number of affected rows
+        public static int ExecuteNonQueryCommand(DbCommand command)
+        {
+            // The number of affected rows 
+            int affectedRows = -1;
+            // Execute the command making sure the connection gets closed in the end
+            try
+            {
+                // Open the connection of the command
+                command.Connection.Open();
+                // Execute the command and get the number of affected rows
+                affectedRows = command.ExecuteNonQuery();
+            }
+            catch (DbException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                //Close the Connection
+                if (command.Connection.State == ConnectionState.Open)
+                    command.Connection.Close();
+            }
+            // return the number of affected rows
+            return affectedRows;
+        }
+
+        // execute a select command and return a single result as a string
+        public static object ExecuteScalarCommand(DbCommand command)
+        {
+
+            // The value to be returned 
+            object result = null;
+            // Execute the command making sure the connection gets closed in the end
+            try
+            {
+                // Open the connection of the command
+                command.Connection.Open();
+                // Execute the command and get the aggregate value
+                result = command.ExecuteScalar();
+            }
+            catch (DbException ex)
+            {
+                throw ex;
+            }
+
+            finally
+            {
+                //Close the Connection
+                if (command.Connection.State == ConnectionState.Open)
+                    command.Connection.Close();
+            }
+            // return the result
+            return result;
+        }
+    }
+}
+
+2. GUEST DAL
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data.Common;
+using IGATEPATNI.GuestPhoneBook.Entities;
+using System.Data;
+using IGATEPATNI.GuestPhoneBook.Exceptions;
+
+namespace IGATEPATNI.GuestPhoneBook.DAL
+{
+    public class GuestDAL
+    {
+        public bool AddGuestDAL(Guest newGuest)
+        {
+            bool guestAdded = false;
+            try
+            {
+                DbCommand command = DataConnection.CreateCommand();
+                command.CommandText = "uspAddGuest";
+
+                DbParameter param = command.CreateParameter();
+                param.ParameterName = "@ipv_iGuestID";
+                param.DbType = DbType.Int32;
+                param.Value = newGuest.GuestID;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcGuestName";
+                param.DbType = DbType.String;
+                param.Value = newGuest.GuestName;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcGuestContactNumber";
+                param.DbType = DbType.String;
+                param.Value = newGuest.GuestContactNumber;
+                command.Parameters.Add(param);
+
+                int affectedRows = DataConnection.ExecuteNonQueryCommand(command);
+
+                if (affectedRows > 0)
+                    guestAdded = true;
+            }
+            catch (DbException ex)
+            {
+                string errormessage;
+                
+                switch (ex.ErrorCode)
+                {
+                    case -2146232060:
+                        errormessage = "Database Does NotExists Or AccessDenied";
+                        break;
+                    default:
+                       errormessage = ex.Message;
+                        break;
+                }
+                throw new GuestPhoneBookException(errormessage);
+            }
+            return guestAdded;
+
+        }
+
+        public List<Guest> GetAllGuestsDAL()
+        {
+            List<Guest> guestList = null;
+            try
+            {
+                DbCommand command = DataConnection.CreateCommand();
+                command.CommandText = "uspGetAllGuests";
+
+
+
+                DataTable dataTable = DataConnection.ExecuteSelectCommand(command);
+                if (dataTable.Rows.Count > 0)
+                {
+                    guestList = new List<Guest>();
+                    for (int rowCounter = 0; rowCounter < dataTable.Rows.Count; rowCounter++)
+                    {
+                        Guest guest = new Guest();
+                        guest.GuestID = (int)dataTable.Rows[rowCounter][0];
+                        guest.GuestName = (string)dataTable.Rows[rowCounter][1];
+                        guest.GuestContactNumber = (string)dataTable.Rows[rowCounter][2];
+                        guestList.Add(guest);
+                    }
+                }
+            }
+            catch (DbException ex)
+            {
+                throw new GuestPhoneBookException(ex.Message);
+            }
+            return guestList;
+        }
+
+        public Guest SearchGuestDAL(int searchGuestID)
+        {
+            Guest searchGuest = null;
+            try
+            {
+                DbCommand command = DataConnection.CreateCommand();
+                command.CommandText = "uspSearchGuest";
+
+                DbParameter param = command.CreateParameter();
+                param.ParameterName = "@ipv_iGuestID";
+                param.DbType = DbType.Int32;
+                param.Value = searchGuestID;
+                command.Parameters.Add(param);
+
+                DataTable dataTable = DataConnection.ExecuteSelectCommand(command);
+                if (dataTable.Rows.Count > 0)
+                {
+                    searchGuest = new Guest();
+                    searchGuest.GuestID = (int)dataTable.Rows[0][0];
+                    searchGuest.GuestName = (string)dataTable.Rows[0][1];
+                    searchGuest.GuestContactNumber = (string)dataTable.Rows[0][2];
+
+                }
+            }
+            catch (DbException ex)
+            {
+                throw new GuestPhoneBookException(ex.Message);
+            }
+            return searchGuest;
+        }
+
+        public bool UpdateGuestDAL(Guest updateGuest)
+        {
+            bool guestUpdated = false;
+            try
+            {
+                DbCommand command = DataConnection.CreateCommand();
+                command.CommandText = "uspUpdateGuest";
+
+                DbParameter param = command.CreateParameter();
+                param.ParameterName = "@ipv_iGuestID";
+                param.DbType = DbType.Int32;
+                param.Value = updateGuest.GuestID;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcGuestName";
+                param.DbType = DbType.String;
+                param.Value = updateGuest.GuestName;
+                command.Parameters.Add(param);
+
+
+                param = command.CreateParameter();
+                param.ParameterName = "@ipv_vcGuestContactNumber";
+                param.DbType = DbType.String;
+                param.Value = updateGuest.GuestContactNumber;
+                command.Parameters.Add(param);
+
+                int affectedRows = DataConnection.ExecuteNonQueryCommand(command);
+
+                if (affectedRows > 0)
+                    guestUpdated = true;
+            }
+            catch (DbException ex)
+            {
+                throw new GuestPhoneBookException(ex.Message);
+            }
+            return guestUpdated;
+
+        }
+
+        public bool DeleteGuestDAL(int deleteGuestID)
+        {
+            bool guestDeleted = false;
+            try
+            {
+                DbCommand command = DataConnection.CreateCommand();
+                command.CommandText = "uspDeleteGuest";
+
+                DbParameter param = command.CreateParameter();
+                param.ParameterName = "@ipv_iGuestID";
+                param.DbType = DbType.Int32;
+                param.Value = deleteGuestID;
+                command.Parameters.Add(param);
+
+                int affectedRows = DataConnection.ExecuteNonQueryCommand(command);
+
+                if (affectedRows > 0)
+                    guestDeleted = true;
+            }
+            catch (DbException ex)
+            {
+                throw new GuestPhoneBookException(ex.Message);
+            }
+            return guestDeleted;
+
+        }
+
+    }
+}
+
+
+3.PHONE BOOK CONFIGURATION:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Configuration;
+
+namespace IGATEPATNI.GuestPhoneBook.DAL
+{
+    public class PhoneBookConfiguration
+    {
+        private static string providerName;
+
+        public static string ProviderName
+        {
+            get { return PhoneBookConfiguration.providerName; }
+            set { PhoneBookConfiguration.providerName = value; }
+        }
+        private static string connectionString;
+
+        public static string ConnectionString
+        {
+            get { return PhoneBookConfiguration.connectionString; }
+            set { PhoneBookConfiguration.connectionString = value; }
+        }
+
+        static PhoneBookConfiguration()
+        {
+            providerName = ConfigurationManager.ConnectionStrings["GuestPhoneBook"].ProviderName;
+            connectionString = ConfigurationManager.ConnectionStrings["GuestPhoneBook"].ConnectionString;
+
+        }
+    }
+
+}
+
+ENTITIES:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace IGATEPATNI.GuestPhoneBook.Entities
+{
+    public class Guest
+    {
+        public int GuestID { get; set; }
+        public string GuestName { get; set; }
+        public string GuestContactNumber { get; set; }
+    }
+}
+
+
+EXCEPTION:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace IGATEPATNI.GuestPhoneBook.Exceptions
+{
+    public class GuestPhoneBookException : ApplicationException
+    {
+        public GuestPhoneBookException()
+            : base()
+        {
+        }
+
+        public GuestPhoneBookException(string message)
+            : base(message)
+        {
+        }
+        public GuestPhoneBookException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
+}

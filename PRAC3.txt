@@ -1,0 +1,778 @@
+DATABASE CONNECTIVITY USING ADO.NET
+
+(ActiveX Data Objects)
+use built in classes under the namespace
+
+use, 
+	using System.Data;
+	using System.Data.SqlClient;
+
+	 use class,
+		SqlConnection
+	 use,
+		SqlCommand
+
+1.which server
+2.which database
+3.which authentication
+
+OLEDB(Object Linking and Embedding, Database)
+ODBC(Open Database Connectivity)
+
+Connected and Disconnected mode:
+
+preference- disconnected mode(collect the data from the database and work on it)
+
+if we just want to retrieve the data and do no modifications having 
+forward only(cant go back) and read only specifications then we use 
+connected mode.
+
+"INSERT EMP VALUES (" +Txt1.Text + "," +"ABC", "Mumbai");"
+"INSERT EMP VALUES  (@eid, #enme, @city);"
+
+DATABASE CONNECTION:
+
+GO TO VIEW- SERVER EXPLORER- CONNECT TO DATABASE- MICROSOFT SQL SERVER- CONTINUE- SERVER NAME [.]- SELECT A DATABASE NAME- OK
+
+//CONNECTING DATABASE CODE FROM NORTHWIND DATABASE
+
+using System;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace ConsoleApplication1
+{
+    class Program
+    {
+        static SqlConnection con = null; //object for connection
+        static SqlCommand com = null; //object for command
+        static SqlDataReader reader = null; //object for data reader
+
+        static void Main(string[] args)
+        {
+            //SqlDataReader
+            con = new SqlConnection(
+                "Data Source=.;Initial Catalog=northwind;Integrated Security=True");
+
+            try
+            {
+                con.Open(); //opens database connection
+                Console.WriteLine("Connected Succesfully...");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            com = new SqlCommand();
+            com.Connection = con;
+            com.CommandText = "Select EmployeeID, FirstName from Employees"; //fetching data from the selected database
+            com.CommandType = CommandType.Text;
+
+            reader = com.ExecuteReader();
+            Console.WriteLine("Records available -" + reader.HasRows);
+
+            if (reader.HasRows) //if data is present in the row the read the data
+            {
+                while (reader.Read()) //shows all the data
+                {
+                    Console.Write(reader[0] + "\t");
+                    Console.WriteLine(reader[1]);
+                }
+            }
+            Console.ReadLine();
+        }
+    }
+}
+
+//MODIFIED
+
+using System;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace ConsoleApplication1
+{
+    class Program
+    {
+        static SqlConnection con = null; //object for connection
+        static SqlCommand com = null; //object for command
+        static SqlDataReader reader = null; //object for data reader
+
+        static void Main(string[] args)
+        {
+            //SqlDataReader
+            con = new SqlConnection(
+                "Data Source=.;Initial Catalog=northwind;Integrated Security=True");
+
+            try
+            {
+                con.Open(); //opens database connection
+                Console.WriteLine("Connected Succesfully...");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            com = new SqlCommand();
+            com.Connection = con;
+            com.CommandText = "Select EmployeeID, FirstName, LastName, City from Employees"; //fetching data from the selected database
+            com.CommandType = CommandType.Text;
+            try
+            {
+
+                reader = com.ExecuteReader();
+                Console.WriteLine("Records available -" + reader.HasRows);
+
+                if (reader.HasRows) //if data is present in the row the read the data
+                {
+                    while (reader.Read()) //shows all the data
+                    {
+                        for (int count = 0; count < reader.FieldCount; count++)
+                        {
+                            Console.Write(reader[count] + "\t\t");
+                        }
+                        Console.WriteLine();
+                    }
+                }
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message); 
+            }
+            Console.ReadLine();
+        }
+    }
+}
+
+//COUNT
+
+ class Program
+    {
+        static SqlConnection con = null; //object for connection
+        static SqlCommand com = null; //object for command
+        static SqlDataReader reader = null; //object for data reader
+
+        static void Main(string[] args)
+        {
+            //SqlDataReader
+            con = new SqlConnection(
+                "Data Source=.;Initial Catalog=northwind;Integrated Security=True");
+
+            try
+            {
+                con.Open(); //opens database connection
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            Console.WriteLine("Connected Succesfully...");
+            com = new SqlCommand();
+            com.Connection = con;
+            //com.CommandText = "Select EmployeeID, FirstName, LastName, City from Employees"; //fetching data from the selected database
+
+            com.CommandText = "Select Count (*) from Employees";
+            com.CommandType = CommandType.Text;
+            //try
+            //{
+
+            //    reader = com.ExecuteReader();
+            //    Console.WriteLine("Records available -" + reader.HasRows);
+
+            //    if (reader.HasRows) //if data is present in the row the read the data
+            //    {
+            //        while (reader.Read()) //shows all the data
+            //        {
+            //            for (int count = 0; count < reader.FieldCount; count++)
+            //            {
+            //                Console.Write(reader[count] + "\t\t");
+            //            }
+            //            Console.WriteLine();
+            //        }
+            //    }
+            //}
+
+            try
+            {
+                int empCount = (int)com.ExecuteScalar();
+                Console.WriteLine("Employees count - {0}", empCount);
+            }
+
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            Console.ReadLine();
+        }
+    }
+}
+
+//MORE MODIFICATIONS
+
+using System;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace ConsoleApplication1
+{
+    class Program
+    {
+        static SqlConnection con = null; //object for connection
+        static SqlCommand com = null; //object for command
+        static SqlDataReader reader = null; //object for data reader
+
+        static void Main(string[] args)
+        {
+            using (con = (new SqlConnection("Data Source=.;Initial Catalog=northwind;Integrated Security=True")))
+            {
+                //SqlDataReader
+                //con = new SqlConnection(
+                    //"Data Source=.;Initial Catalog=northwind;Integrated Security=True");
+            
+                try
+                {
+                    con.Open(); //opens database connection
+                    Console.WriteLine("Connected Succesfully...");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+           
+                com = new SqlCommand();
+                com.Connection = con;
+                //com.CommandText = "Select EmployeeID, FirstName, LastName, City from Employees"; //fetching data from the selected database
+                com.CommandType = CommandType.Text;
+                com.CommandText = "Select Employeeid, FirstName from Employees;" + "select categoryid, categoryname from categories;";
+                reader = com.ExecuteReader();
+           
+                try
+                {
+                    Console.WriteLine("RECORDS AVAILABLE -" + reader.HasRows);
+                    while (reader.HasRows)
+                    {
+                        int rowcount = 0;
+                        while (reader.Read())
+                        {
+                            if (rowcount++ == 0)
+                            {
+                                Console.WriteLine();
+                                Console.WriteLine("Result set records has {0} fields.", reader.FieldCount);
+
+                                var datatype1 = reader[0].GetType();
+                                Console.Write(datatype1);
+                                Console.Write("\t");
+
+                                var datatype2 = reader[1].GetType();
+                                Console.Write(datatype2);
+                                Console.WriteLine();
+
+                                //Get string representation of Type Of the column
+                                Console.Write(reader.GetDataTypeName(0));
+                                Console.Write("\t\t");
+                                Console.WriteLine(reader.GetDataTypeName(1));
+
+                                //Console.Write(reader.GetOrdinal("employeeid") + "\t\t");
+                                //Console.Write(reader.GetOrdinal("firstname"));
+                                Console.WriteLine("\n\n\tData\n");
+                                Console.WriteLine("{0}\t{1}", reader.GetName(0), reader.GetName(1));
+                                Console.WriteLine("{0}\t{1}", "-".PadRight(reader.GetName(0).Length, '-'), "-".PadRight(reader.GetName(1).Length, '-'));
+                            }
+
+                            for (int col = 0; col < reader.FieldCount; col++)
+                            {
+                                Console.Write("{0}\t\t", reader[col]);
+                            }
+                            Console.WriteLine();
+                        }
+                        reader.NextResult();
+
+                    }
+                    reader.Close();
+                }
+                     
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                Console.WriteLine(con.State);
+            }
+            Console.WriteLine(con.State);
+            Console.ReadLine();
+        }
+    }
+}
+
+ASIGNMENT1
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace WindowsFormsApplication1
+{
+    public partial class Form1 : Form
+    {
+        static SqlConnection con = null;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //The Insert DML to add employee record
+                SqlCommand cmd = new SqlCommand
+                ("insert into employee values(@eno,@enm,@esal,@etyp)", con);
+                //The Parameters
+                cmd.Parameters.Add("@eno", SqlDbType.Int);
+                cmd.Parameters.Add("@enm", SqlDbType.VarChar, 50);
+                cmd.Parameters.Add("@esal", SqlDbType.Decimal);
+                cmd.Parameters.Add("@etyp", SqlDbType.VarChar, 1);
+                //Assigning Values to parameters
+                cmd.Parameters["@eno"].Value = textBox1.Text;
+                cmd.Parameters["@enm"].Value = textBox2.Text;
+                cmd.Parameters["@esal"].Value = textBox3.Text;
+                cmd.Parameters["@etyp"].Value = radioButton1.Checked == true ? "P" : "C";
+                //Execute Insert ....
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Employee Details Saved");
+            }
+            catch (SqlException sqlex)
+            {
+                MessageBox.Show(sqlex.Message);
+            }
+        }
+        
+
+        private void groupBox1_ForeColorChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            con = new SqlConnection
+            (@"Data Source=.;Initial Catalog=Training;Integrated Security=True");
+            con.Open();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SqlDataReader dreader=null;
+                //The Procedure to execute
+                  SqlCommand cmd = new SqlCommand("GetEmployeeById", con);
+                  cmd.CommandType = CommandType.StoredProcedure;
+                //define procedure parameter
+                SqlParameter prm;
+                prm = new SqlParameter();
+                prm.SqlDbType = SqlDbType.Int;
+                prm.Direction = ParameterDirection.Input;
+                prm.ParameterName = "@eno";
+                cmd.Parameters.Add(prm);
+                //assign parameter value
+                cmd.Parameters["@eno"].Value = int.Parse(textBox1.Text);
+                //execute
+                dreader = cmd.ExecuteReader();
+                //if employee record found
+                if (dreader.Read())
+                {
+                    textBox2.Text = dreader["empname"].ToString();
+                    textBox3.Text = dreader["empsal"].ToString();
+                    if (dreader["emptype"].ToString() == "P")
+                        radioButton1.Checked = true;
+                    else
+                        radioButton2.Checked = true;
+                }
+                else
+                {
+                    button2_Click(button2, e);
+                    MessageBox.Show("No such employee");
+                }
+                dreader.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                MessageBox.Show(sqlex.Message);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+            textBox1.Focus();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand("Delete from employee where empno=" + textBox1.Text, con);
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Deleted Successfully");
+                textBox1.Text = "";
+                textBox2.Text = "";
+                textBox3.Text = "";
+                textBox1.Focus();
+            }
+            catch(SqlException)
+            {
+                MessageBox.Show("Employee details Deleted");
+            }
+        }
+    }
+}
+
+
+ASSIGNMENT 2
+
+PROCEDURE:
+
+go
+alter procedure addemp @name varchar(50),@sal numeric(10,2),@type varchar(1),@nextid int out as
+begin
+--declare @id int;
+select TOP(1) @nextid=empno+1 from employee order by empno desc;
+insert into employee values(@nextid,@name,@sal,@type)
+end
+select * from employee
+
+PROGRAM:
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace DemoAss2
+{
+    public partial class Form1 : Form
+    {
+        static SqlConnection con = null;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            con = new SqlConnection(@"Data Source=.;Initial Catalog=Training;Integrated Security=True");
+            con.Open();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SqlDataReader dreader = null;
+                // The Procedure to execute
+                SqlCommand cmd = new SqlCommand("addemp", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                // define procedure parameter
+                SqlParameter prm;
+                prm = new SqlParameter();
+                prm.SqlDbType = SqlDbType.Int;
+                prm.Direction = ParameterDirection.Input;
+                prm.ParameterName = "@eno";
+                cmd.Parameters.Add(prm);
+
+                // assign parameter value
+                cmd.Parameters["@eno"].Value = int.Parse(textBox1.Text);
+
+                // execute
+                dreader = cmd.ExecuteReader();
+
+                // if employee record found
+                if (dreader.Read())
+                {
+                    textBox2.Text = dreader["empname"].ToString();
+                    textBox3.Text = dreader["empsal"].ToString();
+                    if (dreader["emptype"].ToString() == "P")
+                        radioButton1.Checked = true;
+                    else
+                        radioButton2.Checked = true;
+                }
+                else
+                {
+                    button3_Click(button3, e);
+                    MessageBox.Show("No such employee");
+                }
+                dreader.Close();
+            }
+            catch (SqlException sqlex)
+            {
+                MessageBox.Show(sqlex.Message);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+            textBox1.Focus();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SqlCommand com = new SqlCommand("addemp", con);
+                com.CommandType = CommandType.StoredProcedure;
+                SqlParameter prm1, prm2, prm3, prm4;
+                prm1 = new SqlParameter();
+                prm1.SqlDbType = SqlDbType.VarChar;
+                prm1.ParameterName = "@name";
+
+                com.Parameters.Add(prm1);
+
+                prm2 = new SqlParameter();
+                prm2.SqlDbType = SqlDbType.Real;
+                prm2.ParameterName = "@sal";
+
+                com.Parameters.Add(prm2);
+
+                prm3 = new SqlParameter();
+                prm3.SqlDbType = SqlDbType.Char;
+                prm3.ParameterName = "@type";
+
+                com.Parameters.Add(prm3);
+
+                prm4 = new SqlParameter();
+                prm4.SqlDbType = SqlDbType.Int;
+                prm4.ParameterName = "@nextid";
+                prm4.Direction = ParameterDirection.Output;
+                com.Parameters.Add(prm4);
+
+                com.Parameters["@name"].Value = textBox2.Text;
+                com.Parameters["@sal"].Value = Convert.ToDouble(textBox3.Text);
+                com.Parameters["@type"].Value = radioButton1.Checked == true ? "P" : "C";
+
+                com.ExecuteNonQuery();
+                textBox1.Text = prm4.Value.ToString();
+                ////The Insert DML to add employee record
+                //SqlCommand cmd = new SqlCommand
+                //("insert into employee values(@eno,@enm,@esal,@etyp)", con);
+                ////The Parameters
+                //cmd.Parameters.Add("@eno", SqlDbType.Int);
+                //cmd.Parameters.Add("@enm", SqlDbType.VarChar, 50);
+                //cmd.Parameters.Add("@esal", SqlDbType.Decimal);
+                //cmd.Parameters.Add("@etyp", SqlDbType.VarChar, 1);
+                ////Assigning Values to parameters
+                //cmd.Parameters["@eno"].Value = txtempno.Text;
+                //cmd.Parameters["@enm"].Value = txtempname.Text;
+                //cmd.Parameters["@esal"].Value = txtsalary.Text;
+                //cmd.Parameters["@etyp"].Value = rdpayroll.Checked == true ? "P" : "C";
+                ////Execute Insert ....
+                //cmd.ExecuteNonQuery();
+                //MessageBox.Show("Employee Details Saved");
+            }
+            catch (SqlException sqlex)
+            {
+                MessageBox.Show(sqlex.Message);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand
+                    ("delete from employee where empno=" + textBox1.Text, con);
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Deleted successfully");
+                textBox1.Text = "";
+                textBox2.Text = "";
+                textBox3.Text = "";
+                textBox1.Focus();
+            }
+            catch (SqlException)
+            {
+                MessageBox.Show("Employee details deleted");
+            }
+        }
+    }
+}
+
+
+//DATA ADAPTER
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace DataAdapter
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            SqlConnection con = new SqlConnection(@"Data Source=.;Initial Catalog=northwind;Integrated Security=True");
+            
+            //SqlConnection con = null;
+            //string sqlconnection = ConfigurationManager.ConnectionStrings["Northwind"].ConnectionString;
+            con.Open();
+
+            SqlDataAdapter adapter = new SqlDataAdapter("SELECT EmployeeID, firstname from Employees",con);
+            
+            //Create command builder object to build sql commands
+            SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
+
+            
+            DataSet dt = new DataSet();
+            adapter.Fill(dt, "emp");
+            dt.Tables["emp"].Rows[2]["firstname"] = "harad";
+
+            Console.WriteLine("Changes: {0}", dt.HasChanges());
+            Console.WriteLine("Changes in Table[0]: {0}", dt.Tables[0].GetChanges().Rows.Count);
+
+            DataTable tbl2 = dt.Tables[0].GetChanges();
+            adapter.Update(dt, "emp");
+            Console.WriteLine("name : {0}", dt.Tables["emp"].Rows[2]["firstname"]);
+
+            Console.WriteLine(dt.Tables["emp"].Rows.Count);
+
+            foreach (DataTable dtb in dt.Tables)
+            {
+                foreach (DataRow dr in dtb.Rows)
+                {
+                    foreach (DataColumn dc in dr.Table.Columns)
+                    {
+                        Console.Write(dr[dc].ToString());
+                    }
+                    Console.WriteLine();
+                }
+            }
+            Console.Read();
+        }
+    }
+}
+
+
+//MODIFICATIONS
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace DataAdapter
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            SqlConnection con = new SqlConnection(@"Data Source=.;Initial Catalog=northwind;Integrated Security=True");
+            
+            //SqlConnection con = null;
+            //string sqlconnection = ConfigurationManager.ConnectionStrings["Northwind"].ConnectionString;
+            con.Open();
+
+            //Create data adapter object for update and other operations
+            SqlDataAdapter adapter = new SqlDataAdapter("SELECT EmployeeID, firstname from Employees",con);
+            
+            //Create command builder object to build sql commands
+            SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
+
+            
+            DataSet dt = new DataSet();
+
+            //fill dataset using query defined previously for data adapter
+            adapter.Fill(dt, "emp");
+
+            //change data in employee table
+            dt.Tables["emp"].Rows[2]["firstname"] = "harad";
+            dt.Tables["emp"].Rows[3]["firstname"] = "arad";
+
+            //update rows
+            DataRow[] updateRows = dt.Tables["emp"].Select("EmployeeID=3");
+            DataRow UpdateRow = updateRows[0];
+            UpdateRow[1] = "abcd";
+
+            //state of the row //modified
+            Console.WriteLine(UpdateRow.RowState);
+            //dt.RejectChanges();
+            //dt.AcceptChanges();
+
+            //to check whether changes occured or not
+            Console.WriteLine("Changes: {0}", dt.HasChanges());
+            Console.WriteLine("Changes in Table[0]: {0}", dt.Tables[0].GetChanges().Rows.Count);
+           
+            DataTable tbl2 = dt.Tables[0].GetChanges();
+            adapter.Update(dt, "emp");
+
+            //printing the output for various modifications separately
+            Console.WriteLine("name : {0}", dt.Tables["emp"].Rows[2]["firstname"]);
+            Console.WriteLine("name : {0}", dt.Tables["emp"].Rows[3]["firstname"]);
+
+            //counting no. of rows
+            Console.WriteLine(dt.Tables["emp"].Rows.Count);
+
+            foreach (DataTable dtb in dt.Tables)
+            {
+                foreach (DataRow dr in dtb.Rows)
+                {
+                    foreach (DataColumn dc in dr.Table.Columns)
+                    {
+                        Console.Write(dr[dc].ToString());
+                    }
+                    Console.WriteLine();
+                }
+            }
+            Console.Read();
+        }
+    }
+}
+
+LINQ
+
+Language Integrated Query
+
+SQL Select From Where OrderBy
+
