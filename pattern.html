@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script type="text/javascript">
+
+  var i, j;
+  
+function myFunction() 
+{
+	var str="";
+	for(i=1; i <= 5; i++)
+	{
+		for(j=1; j<=i; j++)
+		{
+			str+="*";
+			//document.write('*');
+		}
+		str+="<br/>";
+		//document.write('<br/>');
+	}
+	document.getElementById("demo").innerHTML=str;
+}
+
+</script>
+</head>
+<body>
+<button onclick="myFunction()">Display Flag</button>
+<div id="demo">
+	Flag will be here...
+</div>
+</body>
+</html>
